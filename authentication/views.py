@@ -1,5 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.core.mail import EmailMultiAlternatives
 # Create your views here.
 import re
 
@@ -26,7 +31,19 @@ def store(request):
         elif(valid == 0):
             return HttpResponse("The email is not valid")
         else:
+            msg = "Click this verification link"
+            rendered = render_to_string('auth/reg_email.html', {'content': msg})
+            text_content = strip_tags(rendered)
+            email = EmailMultiAlternatives(
+                "User Registration",
+                text_content,
+                settings.EMAIL_HOST_USER,
+                [email],
+            )
+            email.attach_alternative(rendered,"text/html")
+            email.send()
             return HttpResponse("success")
+        
 
         
         
