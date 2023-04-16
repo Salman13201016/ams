@@ -5,3 +5,5 @@ class Admins(models.Model):
     name = models.CharField(max_length = 500)
     email = models.EmailField(max_length = 500)
     password = models.CharField(max_length = 500)
+    v_key = models.CharField(max_length = 500,default=0)
+    v_status = models.CharField(max_length = 500, default=0)

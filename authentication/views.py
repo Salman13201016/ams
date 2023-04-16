@@ -5,6 +5,12 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
+import time
+import hashlib
+
+from . import models
+
+from cryptography.fernet import Fernet
 # Create your views here.
 import re
 
@@ -31,8 +37,27 @@ def store(request):
         elif(valid == 0):
             return HttpResponse("The email is not valid")
         else:
+            admin  = models.Admins()
+            
+            current_time = time.time()
+            v_key = uname+str(current_time)
+            # key = Fernet.generate_key()
+            # fernet = Fernet(key)
+            # encMessage = fernet.encrypt(v_key.encode())
+            result = hashlib.md5(v_key.encode())
+            result = result.hexdigest()
+            v_status = 0
+            admin.name = uname
+            admin.email = email
+            admin.password = pw
+            admin.v_key = result
+            admin.v_status = v_status
+            admin.save()
+            # decMessage = fernet.decrypt(encMessage).decode()
+            link = "http://127.0.0.1:8000/register/verification/"+str(result)
+            # print(link)
             msg = "Click this verification link"
-            rendered = render_to_string('auth/reg_email.html', {'content': msg})
+            rendered = render_to_string('auth/reg_email.html', {'content': msg, 'link':link})
             text_content = strip_tags(rendered)
             email = EmailMultiAlternatives(
                 "User Registration",
@@ -43,9 +68,19 @@ def store(request):
             email.attach_alternative(rendered,"text/html")
             email.send()
             return HttpResponse("success")
+def verify(request, v_key):
+    admin  = models.Admins()
+    record = models.Admins.objects.get(v_key=v_key)
+    record.v_status = 1
+    # if(len(record)==1):
+    record.save(update_fields=['v_status'])
+    record = models.Admins.objects.get(v_key=v_key, v_status=1) 
+    if(record):
         
+        return HttpResponse("verification status updated")
+    # if(len(record)==1):
 
-        
+   
         
    
 
