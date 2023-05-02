@@ -7,6 +7,8 @@ from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
 import time
 import hashlib
+from django.contrib.auth import authenticate, login
+
 
 from . import models
 
@@ -78,6 +80,23 @@ def verify(request, v_key):
     if(record):
         
         return HttpResponse("verification status updated")
+
+def login(request):
+    return render(request,'auth/login.html')
+
+def login_auth(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        password = request.POST['pass']
+        user = authenticate(request, email=email, password=password)
+        #print("asdasda",user)
+        if user:
+            return HttpResponse("Login Success")
+        else:
+            return HttpResponse("login failed")
+
+    print("hello")
+    
     # if(len(record)==1):
 
    
