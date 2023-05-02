@@ -22,5 +22,7 @@ urlpatterns = [
     # path("admin/", admin.site.urls),
     path("register/", v.index),
     path("verification/<v_key>", v.verify),
-    path("store/",v.store, name='store')
+    path("store/",v.store, name='store'),
+    path("login/",v.login),
+    path("login_auth/",v.login_auth, name='login_auth')
 ]
