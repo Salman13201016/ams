@@ -95,7 +95,7 @@ def login_auth(request):
         else:
             return HttpResponse("login failed")
 
-    print("hello")
+    #print("hello")
     
     # if(len(record)==1):
 
